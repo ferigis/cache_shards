@@ -1,0 +1,4 @@
+[{<<"shards">>,
+  {git,"git://github.com/cabol/shards.git",
+       {ref,"0ce5e8fdea4156f3d438013c624804780a7e99d9"}},
+  0}].

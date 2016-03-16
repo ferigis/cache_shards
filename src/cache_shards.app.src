@@ -1,0 +1,16 @@
+{application, 'cache_shards',
+  [{description, "Generational Cache on top of Shards"},
+    {vsn, "0.1.0"},
+    {registered, []},
+    {mod, {cache_shards, []}},
+    {applications,
+      [kernel,
+        stdlib,
+        shards
+      ]},
+    {env,[]},
+    {modules, []},
+    {contributors, []},
+    {licenses, []},
+    {links, []}
+  ]}.
