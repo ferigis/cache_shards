@@ -7,8 +7,8 @@ Cache Shards is a generation cache built on top of [Shards](https://github.com/c
 
 ## Build
 
-    $ git clone https://github.com/ferigis/cache__shards.git
-    $ cd cache__shards
+    $ git clone https://github.com/ferigis/cache_shards.git
+    $ cd cache_shards
     $ make
 
 ## Tests
