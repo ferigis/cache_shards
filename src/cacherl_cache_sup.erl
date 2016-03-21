@@ -3,7 +3,7 @@
 %%% Cache supervisor.
 %%% @end
 %%%-------------------------------------------------------------------
--module(cs_cache_sup).
+-module(cacherl_cache_sup).
 
 -behaviour(supervisor).
 
@@ -39,8 +39,8 @@ init([CacheName, Module, Options]) ->
   Shutdown = 2000,
   Type = worker,
 
-  AChild = {cs_cache_server, {cs_cache_server, start_link, [CacheName, Module, Options]},
-    Restart, Shutdown, Type, [cs_cache_server]},
+  AChild = {cacherl_cache_owner, {cacherl_cache_owner, start_link, [CacheName, Module, Options]},
+    Restart, Shutdown, Type, [cacherl_cache_owner]},
 
   {ok, {SupFlags, [AChild]}}.
 

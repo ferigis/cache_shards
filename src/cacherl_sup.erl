@@ -3,7 +3,7 @@
 %%% Main supervisor
 %%% @end
 %%%-------------------------------------------------------------------
--module(cs_sup).
+-module(cacherl_sup).
 
 -behaviour(supervisor).
 
@@ -43,10 +43,10 @@ terminate_child(SupRef, Id) ->
 init([]) ->
   ChildSpec = {
     ?MODULE,
-    {cs_cache_sup, start_link, []},
+    {cacherl_cache_sup, start_link, []},
     permanent,
     infinity,
     supervisor,
-    [cs_cache_sup]
+    [cacherl_cache_sup]
   },
   {ok, {{simple_one_for_one, 10, 10}, [ChildSpec]}}.

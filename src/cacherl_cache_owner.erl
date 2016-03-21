@@ -1,9 +1,9 @@
 %%%-------------------------------------------------------------------
 %%% @doc
-%%% Cache server.
+%%% Cache owner.
 %%% @end
 %%%-------------------------------------------------------------------
--module(cs_cache_server).
+-module(cacherl_cache_owner).
 
 -behaviour(gen_server).
 
@@ -23,7 +23,7 @@
 -define(SHARDS_POOL_SIZE, 4).
 
 % State
--record(state, {generation  :: cache_shards:generation()
+-record(state, {generation  :: cacherl:generation()
               , cache_name  :: atom()
               , options     :: list()}).
 
@@ -40,7 +40,7 @@ start_link(CacheName, Module, Options) ->
                         , [CacheName, Module, Options]
                         , []).
 
--spec(increment_generation(atom()) -> cache_shards:generation()).
+-spec(increment_generation(atom()) -> cacherl:generation()).
 increment_generation(CacheName) ->
   gen_server:call(CacheName, increment_generation).
 
@@ -57,7 +57,7 @@ init([CacheName, Module, Options]) ->
   true = ets:insert(CacheName, {generation, Generation}),
   true = ets:insert(CacheName, {module, Module}),
   true = ets:insert(CacheName, {options, Options}),
-  ShardsName = cs_utils:shards_name(CacheName, Generation),
+  ShardsName = cacherl_utils:shards_name(CacheName, Generation),
   shards:new(ShardsName, [], shards_pool_size(Options)),
   {ok, #state{generation = 1, cache_name = CacheName, options = Options}}.
 
@@ -65,8 +65,8 @@ init([CacheName, Module, Options]) ->
 handle_call(increment_generation, _From, #state{cache_name = CacheName
                                       , options = Options
                                       , generation = OldGeneration} = State) ->
-  OldShardsName = cs_utils:shards_name(CacheName, OldGeneration),
-  NewShardsName = cs_utils:shards_name(CacheName, OldGeneration + 1),
+  OldShardsName = cacherl_utils:shards_name(CacheName, OldGeneration),
+  NewShardsName = cacherl_utils:shards_name(CacheName, OldGeneration + 1),
   shards:new(NewShardsName, [], shards_pool_size(Options)),
   NewGeneration = ets:update_counter(CacheName, generation, 1),
   shards:delete(OldShardsName),
@@ -93,7 +93,7 @@ handle_info(_Info, State) ->
 %% @hidden
 terminate(_Reason, #state{generation = Generation
                         , cache_name = CacheName} = _State) ->
-  ShardsName = cs_utils:shards_name(CacheName, Generation),
+  ShardsName = cacherl_utils:shards_name(CacheName, Generation),
   shards:delete(ShardsName),
   ok.
 

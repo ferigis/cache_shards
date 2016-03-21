@@ -12,7 +12,7 @@ BUILD_PATH = $(BUILD_ROOT)/*/ebin
 CONFIG ?= test/test.config
 
 CT_OPTS = -cover test/cover.spec -erl_args -config ${CONFIG}
-CT_SUITES = cache_shards_SUITE
+CT_SUITES = cacherl_SUITE
 
 .PHONY: all compile clean distclean dialyze tests shell doc
 
@@ -41,7 +41,7 @@ tests: compile
 	rm -rf test/*.beam
 
 shell: compile
-	erl -pa $(BUILD_PATH) -s shards -config ${CONFIG}
+	erl -pa $(BUILD_PATH) -s cacherl -config ${CONFIG}
 
 edoc:
 	$(REBAR) edoc

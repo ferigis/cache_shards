@@ -5,6 +5,6 @@
 %%% key is not in the cache.
 %%% @end
 %%%-------------------------------------------------------------------
--module(cs_data_provider).
+-module(cacherl_data_provider).
 
 -callback get(Key :: term()) -> []|list(term()).

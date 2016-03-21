@@ -1,11 +1,11 @@
 %%%-------------------------------------------------------------------
 %%% @doc
-%%% Implementation of cs_data_provider behaviour for testing
+%%% Implementation of cacherl_data_provider behaviour for testing
 %%% @end
 %%%-------------------------------------------------------------------
 -module(test_data_provider).
 
--behaviour(cs_data_provider).
+-behaviour(cacherl_data_provider).
 
 %% API
 -export([get/1]).
