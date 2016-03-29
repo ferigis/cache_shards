@@ -69,7 +69,7 @@ handle_call(increment_generation, _From, #state{cache_name = CacheName
   NewGeneration = OldGeneration + 1,
   OldShardsName = cacherl_utils:shards_name(CacheName, OldGeneration),
   NewShardsName = cacherl_utils:shards_name(CacheName, NewGeneration),
-  shards:new(NewShardsName, [], shards_pool_size(Options)),
+  shards:new(NewShardsName, [{read_concurrency, true}], shards_pool_size(Options)),
   [{state, Metadata}] = ets:lookup(CacheName, state),
   Metadata2 = Metadata#{generation := NewGeneration},
   true = ets:insert(CacheName, {state, Metadata2}),
