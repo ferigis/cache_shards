@@ -53,22 +53,26 @@ init([CacheName, Module, Options]) ->
   process_flag(trap_exit, true),
   Generation = 1,
   CacheName = ets:new(CacheName, [set, named_table, {read_concurrency, true}]),
-  true = ets:insert(CacheName, {cache_name, CacheName}),
-  true = ets:insert(CacheName, {generation, Generation}),
-  true = ets:insert(CacheName, {module, Module}),
-  true = ets:insert(CacheName, {options, Options}),
+  State = #{cache_name => CacheName
+            , generation => Generation
+            , module => Module
+            , options => Options},
+  true = ets:insert(CacheName, {state, State}),
   ShardsName = cacherl_utils:shards_name(CacheName, Generation),
-  shards:new(ShardsName, [], shards_pool_size(Options)),
+  shards:new(ShardsName, [{read_concurrency, true}], shards_pool_size(Options)),
   {ok, #state{generation = 1, cache_name = CacheName, options = Options}}.
 
 %% @hidden
 handle_call(increment_generation, _From, #state{cache_name = CacheName
                                       , options = Options
                                       , generation = OldGeneration} = State) ->
+  NewGeneration = OldGeneration + 1,
   OldShardsName = cacherl_utils:shards_name(CacheName, OldGeneration),
-  NewShardsName = cacherl_utils:shards_name(CacheName, OldGeneration + 1),
+  NewShardsName = cacherl_utils:shards_name(CacheName, NewGeneration),
   shards:new(NewShardsName, [], shards_pool_size(Options)),
-  NewGeneration = ets:update_counter(CacheName, generation, 1),
+  [{state, Metadata}] = ets:lookup(CacheName, state),
+  Metadata2 = Metadata#{generation := NewGeneration},
+  true = ets:insert(CacheName, {state, Metadata2}),
   shards:delete(OldShardsName),
   {reply, NewGeneration, State#state{generation = NewGeneration}};
 handle_call(_Request, _From, State) ->
@@ -107,7 +111,7 @@ code_change(_OldVsn, State, _Extra) ->
 
 -spec(shards_pool_size(list()) -> integer()).
 shards_pool_size(Opts) ->
-  case proplists:get_value(shards_pool_size, Opts) of
-    undefined -> ?SHARDS_POOL_SIZE;
-    PoolSize -> PoolSize
+  case lists:keyfind(shards_pool_size, 1, Opts) of
+    false -> ?SHARDS_POOL_SIZE;
+    {shards_pool_size, PoolSize} -> PoolSize
   end.

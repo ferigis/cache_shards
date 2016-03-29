@@ -69,8 +69,7 @@ remove(CacheName) ->
 
 -spec(get(atom(), atom()) -> [] | [term()]).
 get(CacheName, Key) ->
-  [{generation, Generation}] = ets:lookup(CacheName, generation),
-  [{module, Module}] = ets:lookup(CacheName, module),
+  [{state, #{generation := Generation, module := Module}}] = ets:lookup(CacheName, state),
   ShardsName = cacherl_utils:shards_name(CacheName, Generation),
   case catch shards:lookup(ShardsName, Key) of
     [{Key, Result}] -> Result;
@@ -79,9 +78,7 @@ get(CacheName, Key) ->
       catch shards:insert(ShardsName, {Key, Result}),
       Result;
     {'EXIT', _} ->
-      Result = apply(Module, get, [Key]),
-      catch shards:insert(ShardsName, {Key, Result}),
-      Result
+      apply(Module, get, [Key])
   end.
 
 -spec(increment_generation(atom()) -> generation()).
