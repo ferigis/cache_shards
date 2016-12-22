@@ -8,7 +8,7 @@
 -behaviour(application).
 
 %% API
--export([new/3]).
+-export([new/2]).
 -export([remove/1]).
 
 %% Application callbacks
@@ -53,10 +53,10 @@ stop() -> application:stop(cacherl).
 %%% cacherl API
 %%%===================================================================
 
--spec(new(atom(), atom(), list()) ->
+-spec(new(atom(), atom()) ->
   {ok, pid()} | {already_exists, pid()}).
-new(CacheName, Module, Options) ->
-  case cacherl_sup:start_child([CacheName, Module, Options]) of
+new(CacheName, Module) ->
+  case cacherl_sup:start_child([CacheName, Module]) of
     {error,{already_started, Pid}} -> {already_exists, Pid};
     R -> R
   end.
@@ -84,5 +84,3 @@ get(CacheName, Key) ->
 -spec(increment_generation(atom()) -> generation()).
 increment_generation(CacheName) ->
   cacherl_cache_owner:increment_generation(CacheName).
-
-

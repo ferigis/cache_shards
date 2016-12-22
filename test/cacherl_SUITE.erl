@@ -34,22 +34,22 @@ end_per_suite(Config) ->
 %%%===================================================================
 
 new_cache(_Config) ->
-  {ok, Pid} = cacherl:new(new_cache, module, []),
-  {ok, _Pid2} = cacherl:new(new_cache2, module2, []),
-  {already_exists, Pid} = cacherl:new(new_cache, module, []),
+  {ok, Pid} = cacherl:new(new_cache, module),
+  {ok, _Pid2} = cacherl:new(new_cache2, module2),
+  {already_exists, Pid} = cacherl:new(new_cache, module),
   true = is_process_alive(Pid).
 
 remove_cache(_Config) ->
-  {already_exists, _} = cacherl:new(new_cache, module, []),
-  {already_exists, _} = cacherl:new(new_cache2, module2, []),
+  {already_exists, _} = cacherl:new(new_cache, module),
+  {already_exists, _} = cacherl:new(new_cache2, module2),
   true = cacherl:remove(new_cache),
   true = cacherl:remove(new_cache2),
-  {ok, _} = cacherl:new(new_cache, module2, []),
+  {ok, _} = cacherl:new(new_cache, module2),
   true = cacherl:remove(new_cache).
 
 change_generation(_Config) ->
   CacheName = test_cache,
-  {ok, _Pid} = cacherl:new(CacheName, test_data_provider, []),
+  {ok, _Pid} = cacherl:new(CacheName, test_data_provider),
   [{state, #{generation := Generation}}] = ets:lookup(CacheName, state),
   ShardsName = cacherl_utils:shards_name(CacheName, Generation),
   true = is_process_alive(whereis(ShardsName)),
@@ -62,7 +62,7 @@ change_generation(_Config) ->
 
 common_case(_Config) ->
   CacheName = test_cache,
-  {ok, _Pid} = cacherl:new(CacheName, test_data_provider, [{shards_pool_size, 5}]),
+  {ok, _Pid} = cacherl:new(CacheName, test_data_provider),
   [{state, #{generation := Generation}}] = ets:lookup(CacheName, state),
   ShardsName = cacherl_utils:shards_name(CacheName, Generation),
   Key = felipe,
