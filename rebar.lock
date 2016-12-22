@@ -1,4 +1,6 @@
-[{<<"shards">>,
-  {git,"git://github.com/cabol/shards.git",
-       {ref,"ec253a8c77e3d4a84b655b51a2043f787b0f2233"}},
-  0}].
+{"1.1.0",
+[{<<"shards">>,{pkg,<<"shards">>,<<"0.3.1">>},0}]}.
+[
+{pkg_hash,[
+ {<<"shards">>, <<"E8A116641D517BCF57A1AEBA900DFF5DFD39BCAD4FBE2F213F76C45792DDE9A5">>}]}
+].
