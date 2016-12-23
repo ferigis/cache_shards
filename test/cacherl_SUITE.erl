@@ -69,6 +69,9 @@ common_case(_Config) ->
   ExpectedValue = {felipe, ripoll},
   [] = shards:lookup(ShardsName, Key),
   ExpectedValue = cacherl:get(CacheName, Key),
+  % Call again in order to fetch if from cacherl
+  ExpectedValue = cacherl:get(CacheName, Key),
+  [{Key, ExpectedValue}] = shards:lookup(ShardsName, Key),
   [{state, #{generation := Generation}}] = ets:lookup(CacheName, state),
   [{Key, ExpectedValue}] = shards:lookup(ShardsName, Key),
   Key2 = this_key_doesnt_exists,
