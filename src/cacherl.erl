@@ -29,12 +29,7 @@
   {ok, pid()} |
   {error, Reason :: term()}).
 start(_StartType, _StartArgs) ->
-  case cacherl_sup:start_link() of
-    {ok, Pid} ->
-      {ok, Pid};
-    Error ->
-      Error
-  end.
+  cacherl_sup:start_link().
 
 %% @hidden
 -spec(stop(State :: term()) -> term()).
@@ -71,14 +66,13 @@ remove(CacheName) ->
 get(CacheName, Key) ->
   [{state, #{generation := Generation, module := Module}}] = ets:lookup(CacheName, state),
   ShardsName = cacherl_utils:shards_name(CacheName, Generation),
-  case catch shards:lookup(ShardsName, Key) of
-    [{Key, Result}] -> Result;
-    []          ->
+  case shards:lookup(ShardsName, Key) of
+    [{Key, Result}] ->
+      Result;
+    [] ->
       Result = apply(Module, get, [Key]),
       catch shards:insert(ShardsName, {Key, Result}),
-      Result;
-    {'EXIT', _} ->
-      apply(Module, get, [Key])
+      Result
   end.
 
 -spec(increment_generation(atom()) -> generation()).
